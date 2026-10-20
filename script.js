@@ -163,3 +163,88 @@ function saveEvent() {
   });
 }
 
+// Show / hide states
+function showLoading() {
+  loadingBox.hidden = false;
+  errorBox.hidden = true;
+  emptyBox.hidden = true;
+  eventList.innerHTML = '';
+  resultCount.textContent = '';
+}
+
+function showError() {
+  loadingBox.hidden = true;
+  emptyBox.hidden = true;
+  errorBox.hidden = false;
+  errorMessage.textContent = 'Could not load events. Please check your internet connection and try again.';
+  resultCount.textContent = '';
+}
+
+//  Rendering
+function getFilteredEvents() {
+  const searchText = sanitize(searchInput.value).toLowerCase();
+  const category = categoryFilter.value;
+
+  return events
+    .filter(function (item) {
+      const matchesSearch =
+        item.title.toLowerCase().includes(searchText) ||
+        item.host.toLowerCase().includes(searchText);
+      const matchesCategory = category === 'all' || item.category === category;
+      return matchesSearch && matchesCategory;
+    })
+    .sort(function (a, b) {
+      return (a.date + a.time).localeCompare(b.date + b.time);
+    });
+}
+
+function createEventCard(item) {
+  const going = rsvpIds.includes(item.id);
+  const seatsLeft = item.seats - (going ? 1 : 0);
+  const buttonText = going ? 'Cancel RSVP' : 'RSVP';
+  const buttonLabel = (going ? 'Cancel RSVP for ' : 'RSVP to ') + item.title;
+
+  const card = document.createElement('li');
+  card.className = 'event-card';
+
+  // All values below are already sanitized, so innerHTML is safe here
+  card.innerHTML =
+    '<div class="event-date" aria-hidden="true">' +
+      '<span class="event-day">' + getDayNumber(item.date) + '</span>' +
+      '<span class="event-month">' + getMonthShort(item.date) + '</span>' +
+    '</div>' +
+    '<div class="event-body">' +
+      '<h3>' + item.title + '</h3>' +
+      '<p class="event-meta">' + item.category + ' | Hosted by ' + item.host + '</p>' +
+      '<p class="event-meta"><time datetime="' + item.date + 'T' + item.time + '">' +
+        formatDate(item.date) + ', ' + formatTime(item.time) + '</time></p>' +
+      '<p class="event-desc">' + item.description + '</p>' +
+      '<p class="event-seats">' + seatsLeft + ' seats left</p>' +
+      '<button type="button" class="btn btn-secondary" data-rsvp="' + item.id + '" ' +
+        'aria-label="' + buttonLabel + '">' + buttonText + '</button>' +
+    '</div>';
+
+  return card;
+}
+
+function renderEvents() {
+  const filtered = getFilteredEvents();
+
+  loadingBox.hidden = true;
+  errorBox.hidden = true;
+  eventList.innerHTML = '';
+
+  if (filtered.length === 0) {
+    emptyBox.hidden = false;
+    resultCount.textContent = 'No events found.';
+    return;
+  }
+
+  emptyBox.hidden = true;
+  resultCount.textContent = 'Showing ' + filtered.length + ' of ' + events.length + ' events.';
+
+  filtered.forEach(function (item) {
+    eventList.appendChild(createEventCard(item));
+  });
+}
+
