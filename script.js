@@ -82,3 +82,84 @@ const formStatus = document.getElementById('form-status');
 
 const FIELD_NAMES = ['title', 'host', 'date', 'time', 'category', 'seats', 'description'];
 
+// helpers
+function logAnalytics(action) {
+  // eslint-disable-next-line no-console
+  console.log('[Analytics] User interacted with Independent Bookstore Events Page - ' + action);
+}
+
+// Removes HTML tags and escapes special characters (XSS protection)
+function sanitize(text) {
+  return String(text)
+    .replace(/<[^>]*>/g, '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .trim();
+}
+
+function getTodayString() {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return now.getFullYear() + '-' + month + '-' + day;
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString + 'T00:00:00');
+  return date.toLocaleDateString('en-IN', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+function formatTime(timeString) {
+  const parts = timeString.split(':');
+  let hour = Number(parts[0]);
+  const minutes = parts[1];
+  const suffix = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  if (hour === 0) {
+    hour = 12;
+  }
+  return hour + ':' + minutes + ' ' + suffix;
+}
+
+function getMonthShort(dateString) {
+  const date = new Date(dateString + 'T00:00:00');
+  return date.toLocaleDateString('en-IN', { month: 'short' });
+}
+
+function getDayNumber(dateString) {
+  return Number(dateString.split('-')[2]);
+}
+
+// Fake server calls (simulate slow internet) 
+function fetchEvents() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      if (!navigator.onLine) {
+        reject(new Error('offline'));
+        return;
+      }
+      resolve(SEED_EVENTS);
+    }, 1200);
+  });
+}
+
+function saveEvent() {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      if (!navigator.onLine) {
+        reject(new Error('offline'));
+        return;
+      }
+      resolve();
+    }, 800);
+  });
+}
+
