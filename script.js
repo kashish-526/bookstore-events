@@ -248,3 +248,53 @@ function renderEvents() {
   });
 }
 
+//  Loading events 
+async function loadEvents() {
+  showLoading();
+  try {
+    const data = await fetchEvents();
+    events = data.map(function (item) {
+      const newEvent = {
+        id: nextId,
+        title: sanitize(item.title),
+        host: sanitize(item.host),
+        date: item.date,
+        time: item.time,
+        category: item.category,
+        seats: item.seats,
+        description: sanitize(item.description)
+      };
+      nextId += 1;
+      return newEvent;
+    });
+    renderEvents();
+  } catch (error) {
+    showError();
+  }
+}
+
+//Search and filter
+function clearFilters() {
+  searchInput.value = '';
+  categoryFilter.value = 'all';
+  renderEvents();
+}
+
+//  RSVP 
+function toggleRsvp(id) {
+  const index = rsvpIds.indexOf(id);
+  if (index === -1) {
+    rsvpIds.push(id);
+  } else {
+    rsvpIds.splice(index, 1);
+  }
+  renderEvents();
+  logAnalytics('RSVP updated');
+
+  // keep keyboard focus on the same button after re-render
+  const button = eventList.querySelector('[data-rsvp="' + id + '"]');
+  if (button) {
+    button.focus();
+  }
+}
+
