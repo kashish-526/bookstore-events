@@ -415,3 +415,61 @@ async function handleSubmit(event) {
   logAnalytics('Event added');
 }
 
+// ---------- Setup ----------
+function fillCategories() {
+  CATEGORIES.forEach(function (name) {
+    const filterOption = document.createElement('option');
+    filterOption.value = name;
+    filterOption.textContent = name;
+    categoryFilter.appendChild(filterOption);
+
+    const formOption = document.createElement('option');
+    formOption.value = name;
+    formOption.textContent = name;
+    form.elements.category.appendChild(formOption);
+  });
+}
+
+function init() {
+  fillCategories();
+  form.elements.date.min = getTodayString();
+
+  searchInput.addEventListener('input', function () {
+    if (events.length > 0) {
+      renderEvents();
+    }
+  });
+  categoryFilter.addEventListener('change', function () {
+    if (events.length > 0) {
+      renderEvents();
+    }
+  });
+  clearFiltersButton.addEventListener('click', clearFilters);
+  retryButton.addEventListener('click', loadEvents);
+
+  eventList.addEventListener('click', function (event) {
+    const button = event.target.closest('[data-rsvp]');
+    if (button) {
+      toggleRsvp(Number(button.dataset.rsvp));
+    }
+  });
+
+  FIELD_NAMES.forEach(function (name) {
+    const input = document.getElementById(name);
+    input.addEventListener('input', function () {
+      clearFieldError(name);
+    });
+  });
+
+  form.addEventListener('submit', handleSubmit);
+
+  window.addEventListener('online', function () {
+    if (events.length === 0 && !errorBox.hidden) {
+      loadEvents();
+    }
+  });
+
+  loadEvents();
+}
+
+init();
