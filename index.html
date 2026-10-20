@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Events page for an independent bookstore. Browse readings, book clubs and workshops, and add new events.">
+  <title>Independent Bookstore Events Page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <h1>Independent Bookstore Events</h1>
+      <p class="tagline">Readings, book clubs and workshops at Pages &amp; Co.</p>
+    </div>
+  </header>
+
+  <main id="main-content" class="container">
+    <div class="layout">
+
+      <section class="events-section" aria-labelledby="events-heading">
+        <h2 id="events-heading">Upcoming events</h2>
+
+        <div class="controls">
+          <div class="field">
+            <label for="search-input">Search events</label>
+            <input type="search" id="search-input" name="search" placeholder="Search by title or host" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="category-filter">Category</label>
+            <select id="category-filter" name="category-filter">
+              <option value="all">All categories</option>
+            </select>
+          </div>
+        </div>
+
+        <p id="result-count" class="result-count" aria-live="polite"></p>
+
+        <div id="loading-box" class="status-box" role="status" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          <span>Loading events...</span>
+        </div>
+
+        <div id="error-box" class="status-box error-box" role="alert" hidden>
+          <p id="error-message">Could not load events. Please check your internet connection.</p>
+          <button type="button" id="retry-button" class="btn btn-secondary">Try again</button>
+        </div>
+
+        <div id="empty-box" class="status-box" hidden>
+          <h3>No data found</h3>
+          <p>No events match your search. Try a different word or clear the filters.</p>
+          <button type="button" id="clear-filters" class="btn btn-secondary">Clear filters</button>
+        </div>
+
+        <ul id="event-list" class="event-list"></ul>
+      </section>
+
+      <section class="form-section" aria-labelledby="form-heading">
+        <h2 id="form-heading">Add a new event</h2>
+
+        <form id="event-form" novalidate>
+          <div class="field">
+            <label for="title">Event title</label>
+            <input type="text" id="title" name="title" maxlength="80" aria-describedby="title-error" required>
+            <span class="error-text" id="title-error"></span>
+          </div>
+
+          <div class="field">
+            <label for="host">Host or author</label>
+            <input type="text" id="host" name="host" maxlength="60" aria-describedby="host-error" required>
+            <span class="error-text" id="host-error"></span>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="date">Date</label>
+              <input type="date" id="date" name="date" aria-describedby="date-error" required>
+              <span class="error-text" id="date-error"></span>
+            </div>
+            <div class="field">
+              <label for="time">Time</label>
+              <input type="time" id="time" name="time" aria-describedby="time-error" required>
+              <span class="error-text" id="time-error"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="category">Category</label>
+              <select id="category" name="category" aria-describedby="category-error" required>
+                <option value="">Select a category</option>
+              </select>
+              <span class="error-text" id="category-error"></span>
+            </div>
+            <div class="field">
+              <label for="seats">Seats available</label>
+              <input type="number" id="seats" name="seats" min="1" max="500" aria-describedby="seats-error" required>
+              <span class="error-text" id="seats-error"></span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" maxlength="300" aria-describedby="description-error" required></textarea>
+            <span class="error-text" id="description-error"></span>
+          </div>
+
+          <button type="submit" id="submit-button" class="btn btn-primary">Add event</button>
+          <p id="form-status" class="form-status" role="status"></p>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Pages &amp; Co. Independent Bookstore. Demo project for staff use.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
