@@ -1,0 +1,2 @@
+GitHub Repository URL: <paste your GitHub repo link here>
+Live Deployment Link: <paste your Vercel/Netlify link here>
