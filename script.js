@@ -298,3 +298,120 @@ function toggleRsvp(id) {
   }
 }
 
+//  Form
+function getFormData() {
+  return {
+    title: sanitize(form.elements.title.value),
+    host: sanitize(form.elements.host.value),
+    date: form.elements.date.value,
+    time: form.elements.time.value,
+    category: form.elements.category.value,
+    seats: form.elements.seats.value.trim(),
+    description: sanitize(form.elements.description.value)
+  };
+}
+
+function validateForm(data) {
+  const errors = {};
+
+  if (data.title.length < 3) {
+    errors.title = 'Enter a title with at least 3 characters.';
+  }
+  if (data.host.length < 2) {
+    errors.host = 'Enter the name of the host or author.';
+  }
+  if (!data.date) {
+    errors.date = 'Choose a date for the event.';
+  } else if (data.date < getTodayString()) {
+    errors.date = 'The date cannot be in the past.';
+  }
+  if (!data.time) {
+    errors.time = 'Choose a start time.';
+  }
+  if (!CATEGORIES.includes(data.category)) {
+    errors.category = 'Select a category from the list.';
+  }
+
+  const seatsNumber = Number(data.seats);
+  if (data.seats === '' || !Number.isInteger(seatsNumber) || seatsNumber < 1 || seatsNumber > 500) {
+    errors.seats = 'Enter a whole number between 1 and 500.';
+  }
+  if (data.description.length < 10) {
+    errors.description = 'Enter a description with at least 10 characters.';
+  }
+
+  return errors;
+}
+
+function clearFieldError(name) {
+  const input = document.getElementById(name);
+  const error = document.getElementById(name + '-error');
+  input.classList.remove('invalid');
+  input.removeAttribute('aria-invalid');
+  error.textContent = '';
+}
+
+function showFieldError(name, message) {
+  const input = document.getElementById(name);
+  const error = document.getElementById(name + '-error');
+  input.classList.add('invalid');
+  input.setAttribute('aria-invalid', 'true');
+  error.textContent = message;
+}
+
+function clearAllErrors() {
+  FIELD_NAMES.forEach(clearFieldError);
+  formStatus.textContent = '';
+}
+
+function setSaving(isSaving) {
+  submitButton.disabled = isSaving;
+  submitButton.textContent = isSaving ? 'Saving event...' : 'Add event';
+}
+
+async function handleSubmit(event) {
+  event.preventDefault();
+  clearAllErrors();
+
+  const data = getFormData();
+  const errors = validateForm(data);
+  const invalidFields = FIELD_NAMES.filter(function (name) {
+    return errors[name];
+  });
+
+  if (invalidFields.length > 0) {
+    invalidFields.forEach(function (name) {
+      showFieldError(name, errors[name]);
+    });
+    document.getElementById(invalidFields[0]).focus();
+    return;
+  }
+
+  setSaving(true);
+  try {
+    await saveEvent();
+  } catch (error) {
+    setSaving(false);
+    formStatus.textContent = 'Could not save the event. Check your internet connection and try again.';
+    return;
+  }
+
+  events.push({
+    id: nextId,
+    title: data.title,
+    host: data.host,
+    date: data.date,
+    time: data.time,
+    category: data.category,
+    seats: Number(data.seats),
+    description: data.description
+  });
+  nextId += 1;
+
+  setSaving(false);
+  form.reset();
+  clearFilters();
+  formStatus.textContent = 'Event added: ' + data.title;
+  logAnalytics('Event added');
+}
+
