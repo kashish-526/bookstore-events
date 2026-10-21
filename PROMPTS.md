@@ -1,12 +1,5 @@
-# PROMPTS
 
-AI tool used: Claude (Anthropic).
 
-## Prompt 1
-
-I shared the full ticket (ENG-18072) with the Technical Requirements Document and asked:
-
-"Make a complete project ZIP that fulfils all requirements. It should look like it was made by a fresher, so do not use very advanced or high-level keywords or techniques."
 
 ## What I did with the result
 
